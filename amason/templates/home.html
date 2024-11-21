@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla Principal</title>
+</head>
+<body>
+    <h1>Bienvenido a la tienda</h1>
+    
+    <!-- Formulario para agregar productos al carrito -->
+    <form method="post">
+        {% csrf_token %}
+        <label for="producto">Producto:</label>
+        <select name="producto">
+            {% for producto in productos %}
+                <option value="{{ producto.id }}">{{ producto.nombre }} - ${{ producto.precio_unitario }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="cantidad">Cantidad:</label>
+        <input type="number" name="cantidad" min="1" required>
+
+        <button type="submit">Añadir al carrito</button>
+    </form>
+
+    <!-- Carrito -->
+    <h2>Carrito de Compras</h2>
+    {% if request.user.username %}
+        {% with carrito=request.user.username %}
+            <p>Items en el carrito: {{ carrito | length }}</p>
+            <p>Total: ${{ carrito.total }}</p>
+            <a href="{% url 'modificar_carrito' %}">Modificar carrito</a>
+            <a href="{% url 'vaciar_carrito' %}">Vaciar carrito</a>
+        {% endwith %}
+    {% else %}
+        <p>No has iniciado sesión.</p>
+    {% endif %}
+</body>
+</html>
