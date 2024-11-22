@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Carrito</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Modificar Carrito</h1>
+
+        <form method="POST">
+            {% for item in cart['cesta'] %}
+                <div>
+                    <label for="new_quantity_{{ loop.index }}">Nueva cantidad para {{ item['articulo'] }}:</label>
+                    <input type="number" name="new_quantity" id="new_quantity_{{ loop.index }}" value="{{ item['cantidad'] }}" required>
+                    <input type="hidden" name="item_index" value="{{ loop.index - 1 }}">
+                </div>
+            {% endfor %}
+            <button type="submit">Guardar Cambios</button>
+        </form>
+    </div>
+</body>
+</html>
