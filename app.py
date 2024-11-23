@@ -2,96 +2,100 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import redis
 
 app = Flask(__name__)
-app.secret_key = "secret_key_for_session"  # Necesario para el uso de `flash` en Flask
+app.secret_key = "secret_key_for_session"
 
-# Conexión a Redis en Railway
 redis_url = "redis://default:DUKDTvMPFTVlfAnhnOfCMPBgKPoWWqYv@autorack.proxy.rlwy.net:11870"
 redis_client = redis.from_url(redis_url)
 
-# Funciones para interactuar con Redis
+# Funciones auxiliares
 def get_user_cart(username):
-    """Obtener el carrito de un usuario desde Redis"""
     user_data = redis_client.hgetall(username)
     if user_data:
         return {
-            'cesta': eval(user_data.get('cesta', '[]')),
-            'importe_total': float(user_data.get('importe_total', 0))
+            'cesta': eval(user_data.get(b'cesta', b'[]')),
+            'importe_total': float(user_data.get(b'importe_total', b'0'))
         }
     return {'cesta': [], 'importe_total': 0}
 
 def save_user_cart(username, cart_data):
-    """Guardar el carrito de un usuario en Redis"""
     redis_client.hset(username, 'cesta', str(cart_data['cesta']))
     redis_client.hset(username, 'importe_total', str(cart_data['importe_total']))
 
 def clear_user_cart(username):
-    """Vaciar el carrito de un usuario"""
     redis_client.hset(username, 'cesta', '[]')
     redis_client.hset(username, 'importe_total', '0')
 
-# Ruta de la pantalla de login
+def calculate_total(cart):
+    return sum(item['cantidad'] * item['precio_unitario'] for item in cart['cesta'])
+
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
         if username and password:
-            cart = get_user_cart(username)
-            if cart['cesta']:
-                flash(f"Bienvenido de nuevo, {username}!", "success")
-            else:
-                flash(f"Bienvenido, {username}!", "success")
+            flash(f"Bienvenido, {username}!", "success")
             return redirect(url_for('main', username=username))
         else:
             flash("Por favor ingresa un nombre de usuario y contraseña", "error")
-    
     return render_template('login.html')
 
-# Ruta de la pantalla principal
 @app.route('/main/<username>', methods=['GET', 'POST'])
 def main(username):
     if request.method == 'POST':
-        product = request.form['producto']
-        quantity = int(request.form['cantidad'])
-        price_unit = float(request.form['precio_unitario'])
-        
-        # Añadir producto al carrito
         cart = get_user_cart(username)
-        item = {'articulo': product, 'cantidad': quantity, 'precio_unitario': price_unit}
-        cart['cesta'].append(item)
-        cart['importe_total'] += quantity * price_unit
-        save_user_cart(username, cart)
-        
-        flash(f"Producto {product} añadido al carrito", "success")
+        if 'modify_cart' in request.form:
+            for index, item in enumerate(cart['cesta']):
+                new_quantity = int(request.form.get(f'quantity_{index}', item['cantidad']))
+                item['cantidad'] = new_quantity
+            cart['importe_total'] = calculate_total(cart)
+            save_user_cart(username, cart)
+            flash("Carrito modificado correctamente.", "success")
+        else:
+            product = request.form['producto']
+            quantity = int(request.form['cantidad'])
+            price_unit = float(request.form['precio_unitario'])
+
+            if quantity <= 0 or price_unit <= 0:
+                flash("Cantidad y precio deben ser mayores que cero.", "error")
+                return redirect(url_for('main', username=username))
+
+            existing_product = next(
+                (item for item in cart['cesta'] if item['articulo'].lower() == product.lower()), None
+            )
+            if existing_product:
+                existing_product['cantidad'] += quantity
+            else:
+                cart['cesta'].append({'articulo': product, 'cantidad': quantity, 'precio_unitario': price_unit})
+
+            cart['importe_total'] = calculate_total(cart)
+            save_user_cart(username, cart)
+            flash(f"Producto {product} añadido al carrito.", "success")
+
         return redirect(url_for('main', username=username))
-    
+
     cart = get_user_cart(username)
     return render_template('main.html', username=username, cart=cart)
 
-# Ruta para modificar el carrito
-@app.route('/modify/<username>', methods=['GET', 'POST'])
-def modify(username):
+@app.route('/delete/<username>', methods=['GET', 'POST'])
+def delete(username):
     cart = get_user_cart(username)
-    
     if request.method == 'POST':
-        # Modificar carrito
-        item_index = int(request.form['item_index'])
-        new_quantity = int(request.form['new_quantity'])
-        
-        cart['cesta'][item_index]['cantidad'] = new_quantity
-        cart['cesta'][item_index]['precio_total'] = new_quantity * cart['cesta'][item_index]['precio_unitario']
-        
-        # Recalcular importe total
-        cart['importe_total'] = sum(item['cantidad'] * item['precio_unitario'] for item in cart['cesta'])
-        save_user_cart(username, cart)
-        
-        flash("Carrito actualizado!", "success")
+        if 'delete_all' in request.form:
+            clear_user_cart(username)
+            flash("Todos los productos han sido eliminados.", "success")
+        else:
+            selected_items = request.form.getlist('delete_items')
+            cart['cesta'] = [
+                item for index, item in enumerate(cart['cesta'])
+                if str(index) not in selected_items
+            ]
+            cart['importe_total'] = calculate_total(cart)
+            save_user_cart(username, cart)
+            flash("Productos seleccionados eliminados.", "success")
         return redirect(url_for('main', username=username))
-    
-    return render_template('modify.html', cart=cart, username=username)
+    return render_template('delete.html', cart=cart, username=username)
 
-# Ruta para vaciar el carrito
 @app.route('/clear/<username>')
 def clear(username):
     clear_user_cart(username)

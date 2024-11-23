@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pantalla Principal</title>
+    <title>Mi Tienda</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
         <h1>Bienvenido, {{ username }}</h1>
-        
+
+        <!-- Formulario para añadir productos -->
         <form method="POST">
-            <label for="producto">Seleccionar Producto:</label>
-            <select name="producto" id="producto">
-                <option value="Producto 1">Producto 1</option>
-                <option value="Producto 2">Producto 2</option>
-                <option value="Producto 3">Producto 3</option>
-            </select>
+            <label for="producto">Producto:</label>
+            <input name="producto" id="cantidad" required>
+
 
             <label for="cantidad">Cantidad:</label>
             <input type="number" name="cantidad" id="cantidad" required>
@@ -27,16 +25,25 @@
             <button type="submit">Añadir al Carrito</button>
         </form>
 
-        <h2>Carrito de Compras</h2>
-        <ul>
-            {% for item in cart['cesta'] %}
-                <li>{{ item['articulo'] }} - Cantidad: {{ item['cantidad'] }} - Precio Total: {{ item['cantidad'] * item['precio_unitario'] }}</li>
-            {% endfor %}
-        </ul>
-        <h3>Total: {{ cart['importe_total'] }}</h3>
-        
-        <a href="{{ url_for('modify', username=username) }}">Modificar Carrito</a>
-        <a href="{{ url_for('clear', username=username) }}">Vaciar Carrito</a>
+        <!-- Resumen del carrito -->
+        <div class="cart-summary">
+            <h2>Cesta</h2>
+            <ul>
+                {% for item in cart['cesta'] %}
+                    <li>
+                        {{ item['articulo'] }} - Cantidad: 
+                        <input type="number" name="quantity_{{ loop.index0 }}" value="{{ item['cantidad'] }}">
+                        - Precio Total: €{{ item['cantidad'] * item['precio_unitario'] }}
+                    </li>
+                {% endfor %}
+            </ul>
+            <h3>Total: €{{ cart['importe_total'] }}</h3>
+        </div>
+
+        <!-- Acciones del carrito -->
+        <div class="cart-actions">
+            <a href="{{ url_for('delete', username=username) }}">Modificar Productos</a>
+        </div>
     </div>
 </body>
 </html>
