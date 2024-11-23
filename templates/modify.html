@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Carrito</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Modificar Carrito - Bienvenido, {{ username }}</h1>
+
+        <!-- Formulario para modificar el carrito -->
+        <form method="POST">
+            <ul>
+                {% for product in cart %}
+                    <li>
+                        <input type="checkbox" name="delete_items" value="{{ loop.index0 }}">
+                        Producto: {{ product['articulo'] }} <br>
+                        Precio Unitario: {{ product['precio_unitario'] }}€
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <!-- Botones de acción -->
+            <button type="submit" name="modify_cart">Modificar carrito</button>
+            <button type="submit" name="delete_all">Eliminar todos los productos</button>
+            <button type="submit" name="delete_selected">Eliminar productos seleccionados</button>
+        </form>
+    </div>
+</body>
+</html>
