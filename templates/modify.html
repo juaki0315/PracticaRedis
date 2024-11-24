@@ -4,7 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modificar Carrito</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #444;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        li input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button[name="delete_all"] {
+            background-color: #dc3545;
+        }
+
+        button[name="delete_all"]:hover {
+            background-color: #a71d2a;
+        }
+
+        button[name="delete_selected"] {
+            background-color: #28a745;
+        }
+
+        button[name="delete_selected"]:hover {
+            background-color: #1e7e34;
+        }
+
+        /* Responsivo */
+        @media (max-width: 600px) {
+            li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            li input[type="checkbox"] {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -16,8 +108,10 @@
                 {% for product in cart %}
                     <li>
                         <input type="checkbox" name="delete_items" value="{{ loop.index0 }}">
-                        Producto: {{ product['articulo'] }} <br>
-                        Precio Unitario: {{ product['precio_unitario'] }}€
+                        <div>
+                            <strong>Producto:</strong> {{ product['articulo'] }} <br>
+                            <strong>Precio Unitario:</strong> {{ product['precio_unitario'] }}€
+                        </div>
                     </li>
                 {% endfor %}
             </ul>
