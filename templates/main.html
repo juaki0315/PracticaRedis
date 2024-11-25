@@ -8,13 +8,25 @@
 </head>
 <body>
     <div class="container">
-        <h1>Bienvenido, {{ username }}</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Bienvenido, {{ username }}</h1>
+            <!-- Botón de Logout -->
+            <form method="POST" action="{{ url_for('logout') }}">
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
+
+        <!-- Feedback visual -->
+        {% if message %}
+            <div style="margin-bottom: 20px; padding: 10px; border-radius: 5px; background-color: #d4edda; color: #155724;">
+                {{ message }}
+            </div>
+        {% endif %}
 
         <!-- Formulario para añadir productos -->
-        <form method="POST">
+        <form method="POST" style="margin-bottom: 20px;">
             <label for="producto">Producto:</label>
-            <input name="producto" id="producto" required>
-
+            <input name="producto" id="producto" placeholder="Nombre del producto" required>
 
             <label for="cantidad">Cantidad:</label>
             <input type="number" name="cantidad" id="cantidad" required>
@@ -28,16 +40,31 @@
         <!-- Resumen del carrito -->
         <div class="cart-summary">
             <h2>Cesta</h2>
-            <ul>
-                {% for item in cart['cesta'] %}
-                    <li>
-                        {{ item['articulo'] }} - Cantidad: 
-                        <input type="number" name="quantity_{{ loop.index0 }}" value="{{ item['cantidad'] }}">
-                        - Precio Total: €{{ item['cantidad'] * item['precio_unitario'] }}
-                    </li>
-                {% endfor %}
-            </ul>
-            <h3>Total: €{{ cart['importe_total'] }}</h3>
+            {% if cart['cesta'] %}
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #ddd;">
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart['cesta'] %}
+                            <tr>
+                                <td>{{ item['articulo'] }}</td>
+                                <td>{{ item['cantidad'] }}</td>
+                                <td>€{{ item['precio_unitario'] }}</td>
+                                <td>€{{ item['cantidad'] * item['precio_unitario'] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <h3>Total: €{{ cart['importe_total'] }}</h3>
+            {% else %}
+                <p>Tu carrito está vacío.</p>
+            {% endif %}
         </div>
 
         <!-- Acciones del carrito -->

@@ -121,5 +121,11 @@ def clear(username):
     flash("Carrito vaciado.", "success")
     return redirect(url_for('main', username=username))
 
+@app.route('/logout', methods=['POST'])
+def logout():
+    """Cierra la sesión del usuario y lo redirige al login."""
+    flash("Has cerrado sesión correctamente.", "info")
+    return redirect(url_for('login'))
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,64 +1,118 @@
+/* General */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f8ff; /* Color de fondo azul claro */
-    color: #333;
+    font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #f3f4f6;
+    color: #333;
 }
 
 .container {
-    width: 80%;
-    margin: 20px auto;
+    max-width: 800px;
+    margin: 40px auto;
     padding: 20px;
-    background-color: #ffffff;
+    background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Encabezados */
 h1, h2, h3 {
-    color: #4CAF50; /* Verde vibrante */
+    color: #232f3e;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
+/* Formularios */
 form label {
     display: block;
-    margin: 10px 0 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
 }
 
 input, select, button {
     width: 100%;
     padding: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input:focus, button:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
 }
 
 button {
-    background-color: #4CAF50;
+    background-color: #ff9900;
     color: white;
     font-size: 16px;
     cursor: pointer;
     border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #e68a00;
 }
 
-.cart-summary {
+/* Logout Button */
+.logout-button {
+    background-color: #dc3545;
+    color: white;
+    font-size: 16px;
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: #a71d2a;
+}
+
+/* Tablas del carrito */
+table {
+    width: 100%;
+    border-collapse: collapse;
     margin-top: 20px;
+}
+
+table th, table td {
     padding: 10px;
-    border-top: 1px solid #ddd;
+    text-align: left;
+    border: 1px solid #ddd;
 }
 
-.cart-summary ul {
-    list-style: none;
-    padding: 0;
+table th {
+    background-color: #f3f4f6;
+    font-weight: bold;
 }
 
-.cart-summary ul li {
-    margin-bottom: 10px;
+table td input {
+    width: 60px; /* Ajusta el ancho de los inputs numéricos */
 }
 
+/* Resumen del carrito */
+.cart-summary {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.cart-summary h3 {
+    margin-top: 15px;
+    color: #232f3e;
+}
+
+/* Acciones del carrito */
 .cart-actions {
     display: flex;
     justify-content: space-between;
@@ -67,13 +121,97 @@ button:hover {
 
 .cart-actions a {
     text-decoration: none;
-    padding: 10px 20px;
-    background-color: #f44336;
+    padding: 10px 15px;
+    background-color: #007bff;
     color: white;
     border-radius: 5px;
     text-align: center;
+    transition: background-color 0.3s ease;
 }
 
 .cart-actions a:hover {
-    background-color: #e53935;
+    background-color: #0056b3;
+}
+
+/* Feedback visual */
+.message-success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.message-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Modificar carrito - lista de productos */
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul li {
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Botones específicos */
+button[name="delete_all"] {
+    background-color: #dc3545;
+}
+
+button[name="delete_all"]:hover {
+    background-color: #a71d2a;
+}
+
+button[name="delete_selected"] {
+    background-color: #28a745;
+}
+
+button[name="delete_selected"]:hover {
+    background-color: #1e7e34;
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+
+    table th, table td {
+        font-size: 14px;
+    }
+
+    ul li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    ul li input[type="checkbox"] {
+        margin-bottom: 10px;
+    }
+
+    .cart-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .logout-button {
+        width: 100%;
+    }
 }

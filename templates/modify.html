@@ -5,29 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modificar Carrito</title>
     <style>
-        /* Estilos generales */
+        /* Estilos Generales */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-color: #f3f4f6;
             color: #333;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 40px auto;
-            background-color: #fff;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             font-size: 24px;
-            color: #444;
+            color: #232f3e;
             text-align: center;
             margin-bottom: 20px;
+        }
+
+        p {
+            text-align: center;
+            font-size: 18px;
+            color: #555;
         }
 
         ul {
@@ -36,37 +42,46 @@
             margin: 0;
         }
 
-        li {
+        ul li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 15px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 6px;
             background-color: #f9f9f9;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
-        li input[type="checkbox"] {
-            margin-right: 10px;
+        ul li div {
+            flex: 1;
+            margin-left: 10px;
+            color: #333;
         }
 
+        ul li div strong {
+            font-size: 16px;
+            color: #232f3e;
+        }
+
+        ul li input[type="checkbox"] {
+            margin-right: 15px;
+        }
+
+        /* Botones */
         button {
-            width: 100%;
-            padding: 10px 15px;
-            margin: 10px 0;
             font-size: 16px;
             font-weight: bold;
-            color: #fff;
-            background-color: #007BFF;
+            color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
+            padding: 10px 15px;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #0056b3;
+            opacity: 0.9;
         }
 
         button[name="delete_all"] {
@@ -78,49 +93,70 @@
         }
 
         button[name="delete_selected"] {
-            background-color: #28a745;
+            background-color: #e7a10a;
         }
 
         button[name="delete_selected"]:hover {
-            background-color: #1e7e34;
+            background-color: #f36f03;
+        }
+
+        /* Contenedor de botones */
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
         }
 
         /* Responsivo */
         @media (max-width: 600px) {
-            li {
+            .container {
+                padding: 15px;
+            }
+
+            ul li {
                 flex-direction: column;
                 align-items: flex-start;
             }
 
-            li input[type="checkbox"] {
-                margin-bottom: 5px;
+            ul li div {
+                margin: 10px 0 0 0;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Modificar Carrito - Bienvenido, {{ username }}</h1>
+        <h1>Modificar Carrito - {{ username }}</h1>
 
-        <!-- Formulario para modificar el carrito -->
-        <form method="POST">
-            <ul>
-                {% for product in cart %}
-                    <li>
-                        <input type="checkbox" name="delete_items" value="{{ loop.index0 }}">
-                        <div>
-                            <strong>Producto:</strong> {{ product['articulo'] }} <br>
-                            <strong>Precio Unitario:</strong> {{ product['precio_unitario'] }}€
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
+        {% if cart['cesta'] %}
+            <form method="POST">
+                <ul>
+                    {% for product in cart['cesta'] %}
+                        <li>
+                            <input type="checkbox" name="delete_items" value="{{ loop.index0 }}">
+                            <div>
+                                <strong>{{ product['articulo'] }}</strong>
+                                <br>Cantidad: {{ product['cantidad'] }}
+                                <br>Precio Unitario: €{{ product['precio_unitario'] }}
+                                <br>Total: €{{ product['cantidad'] * product['precio_unitario'] }}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
 
-            <!-- Botones de acción -->
-            <button type="submit" name="modify_cart">Modificar carrito</button>
-            <button type="submit" name="delete_all">Eliminar todos los productos</button>
-            <button type="submit" name="delete_selected">Eliminar productos seleccionados</button>
-        </form>
+                <div class="action-buttons">
+                    <button type="submit" name="delete_all">Eliminar todo</button>
+                    <button type="submit" name="delete_selected">Eliminar seleccionados</button>
+                </div>
+            </form>
+        {% else %}
+            <p>Tu carrito está vacío.</p>
+        {% endif %}
     </div>
 </body>
 </html>
